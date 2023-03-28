@@ -30,7 +30,7 @@ jobs:
 
     - name: Get commit message
       id: commit_message
-      run: echo "::set-output name=message::$(git log -1 --pretty=format:'%s')"
+      run: echo "::set-output name=message::$(git tag -l --format='%(contents)' ${{ github.ref }})"
 
     - name: Create Release
       id: create_release
