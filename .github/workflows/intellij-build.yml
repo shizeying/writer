@@ -28,7 +28,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew buildPlugin --stacktrace
+      run: ./gradlew buildPlugin
 
     - name: Get commit message
       id: commit_message
