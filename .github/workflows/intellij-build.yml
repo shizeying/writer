@@ -26,8 +26,6 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew buildPlugin --stacktrace --debug
-      env:
-        GRADLE_OPTS: -Xmx2g # 添加此行以设置 Gradle 的 Java 堆内存分配
 
     - name: Get commit message
       id: commit_message
