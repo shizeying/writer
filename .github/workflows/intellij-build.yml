@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: IntelliJ ${{ steps.extract_version.outputs.version }}
+          release_name: IntelliJ-${{ steps.extract_version.outputs.version }}
           body: ${{ steps.commit_message.outputs.message }}
           draft: false
           prerelease: false
