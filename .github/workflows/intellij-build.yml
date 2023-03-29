@@ -1,4 +1,4 @@
-name: Gradle Build and Release
+name: upload to github  intellij plugin release
 
 on:
   push:
