@@ -15,44 +15,48 @@ jobs:
         working-directory: ./intellij
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2.4.0
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
           distribution: zulu
           java-version: 17
           cache: gradle
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew buildPlugin
+      - name: Build with Gradle
+        run: ./gradlew buildPlugin
 
-    - name: Get commit message
-      id: commit_message
-      run: echo "::set-output name=message::$(git tag -l --format='%(contents)' ${{ github.ref }})"
+      - name: Get commit message
+        id: commit_message
+        run: echo "::set-output name=message::$(git tag -l --format='%(contents)' ${{ github.ref }})"
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: IntelliJ ${{ github.ref }}
-        body: ${{ steps.commit_message.outputs.message }}
-        draft: false
-        prerelease: false
+      - name: Extract version
+        id: extract_version
+        run: echo "::set-output name=version::$(echo ${{ github.ref }} | sed 's/refs\/tags\/IJ-//')"
 
-    - name: Upload Build Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: IntelliJ ${{ steps.extract_version.outputs.version }}
+          body: ${{ steps.commit_message.outputs.message }}
+          draft: false
+          prerelease: false
 
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: intellij/build/distributions/Mintlify Doc Writer-${{ github.ref }}.zip
-        asset_name: Mintlify Doc Writer-${{ github.ref }}.zip
-        asset_content_type: application/zip
+      - name: Upload Build Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: intellij/build/distributions/Mintlify Doc Writer-${{ github.ref }}.zip
+          asset_name: Mintlify Doc Writer-${{ steps.extract_version.outputs.version }}.zip
+          asset_content_type: application/zip
