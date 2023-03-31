@@ -1,10 +1,11 @@
 package com.mintlify.document.helpers
 
-import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.fuel.httpGet
-import com.google.gson.Gson
 import com.beust.klaxon.Klaxon
+import com.github.kittinunf.fuel.core.extensions.jsonBody
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPost
+import com.google.gson.Gson
+import java.util.stream.Collectors
 
 data class Custom(
     var language: String,
@@ -84,6 +85,20 @@ fun getDocFromApi(
                 val status = Klaxon().parse<WorkerStatusResponse>(statusPayload)
                 if (status != null) {
                     if (status.state == "completed" && status.data != null) {
+                        if (languageId.contentEquals("java")) {
+                            val split = status.data?.docstring?.split("\n")?.stream()
+                                    ?.map { i ->
+                                        if (i.contains(">")) {
+                                            i.replace(" * >", " *")
+                                        } else {
+                                            i
+                                        }
+                                    }
+                                    ?.collect(Collectors.joining("\n"))
+                            if (split != null) {
+                                status.data!!.docstring = split
+                            }
+                        }
                         completedResponse = status.data
                     }
                 }
